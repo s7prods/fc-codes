@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@alicloud/captcha20230305": "^1.1.3",
+    "@alicloud/openapi-client": "^0.4.12",
+    "@alicloud/pop-core": "^1.8.0",
+    "crypto-js": "^4.2.0"
+  },
+  "type": "module"
+}
