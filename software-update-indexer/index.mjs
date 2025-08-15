@@ -2,11 +2,11 @@
 
 const apis_list_text = `
 /index/{}       Get index file
-/latest/{}       Get latest version number
 /versions/{}     Get all versions
-/latest_download/{} Get latest version download link
 /release_note/{}/{} Get release note
 /download/{}/{}   Get download link
+/latest/parse/{} Parse latest version number
+/latest/parse[stable]/{} Parse latest stable version number
 `;
 
 export const handler = async (event, context) => {
@@ -47,25 +47,10 @@ export const handler = async (event, context) => {
                 const resp = await getResp();
                 return resp;
             }
-            case 'latest': {
-                // 获取最新版本号
-                const resp = await getResp();
-                return {
-                    statusCode: 200,
-                    body: String(resp?.latest?.version)
-                };
-            }
             case 'versions': {
                 // 获取内容
                 const resp = await getResp('versions.json');
                 return resp;
-            }
-            case 'latest_download': {
-                const resp = await getResp();
-                return {
-                    statusCode: 200,
-                    body: String(resp?.latest?.download_url)
-                };
             }
             case 'release_note':
             case 'download':
@@ -86,6 +71,18 @@ export const handler = async (event, context) => {
                 }
                 return { statusCode: 404, body: 'version specified not found' };
             }
+            case 'latest': {
+                switch (pathParts[1]) {
+                case 'parse':
+                case 'parse[stable]': {
+                    const resp = await getResp('index.json', 3);
+                    return String(resp[(pathParts[1] == 'parse' ? 'latest' : 'latest.stable')])?.version;
+                }
+                default:
+                    return { statusCode: 404, body: 'invalid api' };
+                }
+            }
+                break;
             default:
                 return { statusCode: 404, body: 'invalid api' };
         }
